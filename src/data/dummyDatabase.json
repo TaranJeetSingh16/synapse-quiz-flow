@@ -1,0 +1,114 @@
+
+{
+  "users": [
+    {
+      "id": "u1",
+      "name": "Alex Johnson",
+      "email": "alex@example.com",
+      "avatar": "👨‍💼",
+      "level": 8,
+      "xp": 4200,
+      "joinDate": "2024-12-15",
+      "lastActive": "2025-05-16",
+      "badges": ["Fast Learner", "Streak Master", "Knowledge Explorer"],
+      "subscriptionTier": "free",
+      "achievements": [
+        {"id": "a1", "name": "First Quiz", "date": "2024-12-15"},
+        {"id": "a2", "name": "Perfect Score", "date": "2025-01-10"},
+        {"id": "a3", "name": "7-Day Streak", "date": "2025-02-05"}
+      ]
+    },
+    {
+      "id": "u2",
+      "name": "Sarah Williams",
+      "email": "sarah@example.com",
+      "avatar": "👩‍🔬",
+      "level": 10,
+      "xp": 5100,
+      "joinDate": "2024-11-20",
+      "lastActive": "2025-05-17",
+      "badges": ["Quiz Champion", "Knowledge Master", "Consistency King"],
+      "subscriptionTier": "premium",
+      "achievements": [
+        {"id": "a1", "name": "First Quiz", "date": "2024-11-21"},
+        {"id": "a4", "name": "50 Quizzes", "date": "2025-01-15"},
+        {"id": "a5", "name": "30-Day Streak", "date": "2025-03-10"}
+      ]
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "q1",
+      "title": "Introduction to Machine Learning",
+      "category": "Technology",
+      "difficulty": "Beginner",
+      "timeLimit": 600,
+      "questions": [
+        {
+          "id": "que1",
+          "text": "What is the primary goal of supervised learning?",
+          "type": "multiple-choice",
+          "options": [
+            "Finding patterns in unlabeled data",
+            "Predicting outputs based on labeled data",
+            "Reinforcing decisions through rewards",
+            "Generating new data points"
+          ],
+          "correctAnswer": "Predicting outputs based on labeled data",
+          "difficulty": 2,
+          "explanation": "Supervised learning aims to learn a mapping from inputs to outputs based on example input-output pairs."
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "title": "World History: Ancient Civilizations",
+      "category": "History",
+      "difficulty": "Intermediate",
+      "timeLimit": 900,
+      "questions": [
+        {
+          "id": "que2",
+          "text": "Which ancient civilization built the Great Pyramids of Giza?",
+          "type": "multiple-choice",
+          "options": ["Mesopotamians", "Egyptians", "Greeks", "Romans"],
+          "correctAnswer": "Egyptians",
+          "difficulty": 1,
+          "explanation": "The Great Pyramids of Giza were built by the ancient Egyptians as tombs for pharaohs."
+        }
+      ]
+    }
+  ],
+  "userProgress": [
+    {
+      "userId": "u1",
+      "quizId": "q1",
+      "score": 85,
+      "completionTime": 452,
+      "date": "2025-04-10",
+      "answeredQuestions": [
+        {
+          "questionId": "que1",
+          "userAnswer": "Predicting outputs based on labeled data",
+          "isCorrect": true,
+          "timeSpent": 45
+        }
+      ]
+    },
+    {
+      "userId": "u2",
+      "quizId": "q2",
+      "score": 92,
+      "completionTime": 763,
+      "date": "2025-05-02",
+      "answeredQuestions": [
+        {
+          "questionId": "que2",
+          "userAnswer": "Egyptians",
+          "isCorrect": true,
+          "timeSpent": 38
+        }
+      ]
+    }
+  ]
+}
