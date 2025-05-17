@@ -55,6 +55,11 @@ const QuizResult = () => {
     navigate('/dashboard');
   };
 
+  const handleNewCategory = () => {
+    resetQuiz();
+    navigate('/quiz');
+  };
+
   return (
     <div className="container max-w-2xl mx-auto px-4 py-8">
       <Card className="shadow-lg border-primary/10">
@@ -132,7 +137,7 @@ const QuizResult = () => {
           </Button>
           
           <Button
-            onClick={() => navigate('/quiz')}
+            onClick={handleNewCategory}
             variant="outline"
             className="w-full sm:w-auto"
           >
@@ -154,3 +159,4 @@ const QuizResult = () => {
 };
 
 export default QuizResult;
+

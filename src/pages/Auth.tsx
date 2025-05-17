@@ -1,0 +1,257 @@
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/components/ui/use-toast';
+
+const Auth = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  // Login form state
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  
+  // Register form state
+  const [registerName, setRegisterName] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [registerConfirmPassword, setRegisterConfirmPassword] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoggingIn(true);
+    
+    // Simulate login process
+    setTimeout(() => {
+      setIsLoggingIn(false);
+      // For demo purposes, accept any input
+      toast({
+        title: "Login successful",
+        description: "Welcome back to BrainWave Quiz!",
+      });
+      navigate('/dashboard');
+    }, 1500);
+  };
+
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (registerPassword !== registerConfirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please make sure your passwords match.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsRegistering(true);
+    
+    // Simulate registration process
+    setTimeout(() => {
+      setIsRegistering(false);
+      toast({
+        title: "Registration successful",
+        description: "Your account has been created. Welcome to BrainWave Quiz!",
+      });
+      navigate('/dashboard');
+    }, 1500);
+  };
+
+  const handleDemoLogin = () => {
+    setIsLoggingIn(true);
+    
+    // Simulate demo login
+    setTimeout(() => {
+      setIsLoggingIn(false);
+      toast({
+        title: "Demo login successful",
+        description: "You're logged in as a demo user.",
+      });
+      navigate('/dashboard');
+    }, 1000);
+  };
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      
+      <main className="flex-1 flex items-center justify-center py-10 px-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-quiz-primary to-quiz-primary-light bg-clip-text text-transparent">
+              Welcome to BrainWave Quiz
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Login or create an account to track your progress
+            </p>
+          </div>
+          
+          <Tabs defaultValue="login" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="login">Login</TabsTrigger>
+              <TabsTrigger value="register">Register</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="login">
+              <Card>
+                <form onSubmit={handleLogin}>
+                  <CardHeader>
+                    <CardTitle>Login</CardTitle>
+                    <CardDescription>
+                      Enter your credentials to access your account
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input 
+                        id="email"
+                        type="email" 
+                        placeholder="name@example.com"
+                        value={loginEmail}
+                        onChange={(e) => setLoginEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="password">Password</Label>
+                        <a href="#" className="text-xs text-quiz-primary hover:underline">
+                          Forgot password?
+                        </a>
+                      </div>
+                      <Input 
+                        id="password"
+                        type="password" 
+                        placeholder="••••••••"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </CardContent>
+                  
+                  <CardFooter className="flex-col gap-4">
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-quiz-primary hover:bg-quiz-primary-light"
+                      disabled={isLoggingIn}
+                    >
+                      {isLoggingIn ? "Logging in..." : "Login"}
+                    </Button>
+                    
+                    <Button 
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleDemoLogin}
+                      disabled={isLoggingIn}
+                    >
+                      Try Demo Account
+                    </Button>
+                  </CardFooter>
+                </form>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="register">
+              <Card>
+                <form onSubmit={handleRegister}>
+                  <CardHeader>
+                    <CardTitle>Create an Account</CardTitle>
+                    <CardDescription>
+                      Enter your information to create a new account
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name</Label>
+                      <Input 
+                        id="name"
+                        placeholder="John Doe"
+                        value={registerName}
+                        onChange={(e) => setRegisterName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="register-email">Email</Label>
+                      <Input 
+                        id="register-email"
+                        type="email" 
+                        placeholder="name@example.com"
+                        value={registerEmail}
+                        onChange={(e) => setRegisterEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="register-password">Password</Label>
+                      <Input 
+                        id="register-password"
+                        type="password" 
+                        placeholder="••••••••"
+                        value={registerPassword}
+                        onChange={(e) => setRegisterPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm-password">Confirm Password</Label>
+                      <Input 
+                        id="confirm-password"
+                        type="password" 
+                        placeholder="••••••••"
+                        value={registerConfirmPassword}
+                        onChange={(e) => setRegisterConfirmPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="text-xs text-muted-foreground">
+                      By registering, you agree to our 
+                      <a href="/terms" className="text-quiz-primary hover:underline mx-1">Terms of Service</a>
+                      and
+                      <a href="/privacy" className="text-quiz-primary hover:underline mx-1">Privacy Policy</a>
+                    </div>
+                  </CardContent>
+                  
+                  <CardFooter>
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-quiz-primary hover:bg-quiz-primary-light"
+                      disabled={isRegistering}
+                    >
+                      {isRegistering ? "Creating Account..." : "Create Account"}
+                    </Button>
+                  </CardFooter>
+                </form>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </main>
+      
+      <Footer />
+    </div>
+  );
+};
+
+export default Auth;
