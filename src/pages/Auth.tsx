@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '@/contexts/UserContext';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -8,11 +9,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
+import { Lock, Mail } from 'lucide-react';
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { login } = useUser();
   
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
@@ -25,21 +27,26 @@ const Auth = () => {
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
+  
+  // Forgot password state
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoggingIn(true);
     
-    // Simulate login process
-    setTimeout(() => {
+    try {
+      const success = await login(loginEmail, loginPassword);
+      if (success) {
+        navigate('/dashboard');
+      } else {
+        toast.error("Invalid login credentials");
+      }
+    } finally {
       setIsLoggingIn(false);
-      // For demo purposes, accept any input
-      toast({
-        title: "Login successful",
-        description: "Welcome back to BrainWave Quiz!",
-      });
-      navigate('/dashboard');
-    }, 1500);
+    }
   };
 
   const handleRegister = (e: React.FormEvent) => {
@@ -60,10 +67,7 @@ const Auth = () => {
     // Simulate registration process
     setTimeout(() => {
       setIsRegistering(false);
-      toast({
-        title: "Registration successful",
-        description: "Your account has been created. Welcome to BrainWave Quiz!",
-      });
+      toast.success("Registration successful! Welcome to BrainWave Quiz!");
       navigate('/dashboard');
     }, 1500);
   };
@@ -74,12 +78,22 @@ const Auth = () => {
     // Simulate demo login
     setTimeout(() => {
       setIsLoggingIn(false);
-      toast({
-        title: "Demo login successful",
-        description: "You're logged in as a demo user.",
-      });
+      toast.success("Demo login successful");
       navigate('/dashboard');
     }, 1000);
+  };
+  
+  const handleForgotPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsResettingPassword(true);
+    
+    // Simulate password reset email
+    setTimeout(() => {
+      setIsResettingPassword(false);
+      setShowForgotPassword(false);
+      setForgotPasswordEmail('');
+      toast.success("Password reset link sent! Please check your email.");
+    }, 1500);
   };
 
   return (
@@ -97,155 +111,229 @@ const Auth = () => {
             </p>
           </div>
           
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="register">Register</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="login">
-              <Card>
-                <form onSubmit={handleLogin}>
-                  <CardHeader>
-                    <CardTitle>Login</CardTitle>
-                    <CardDescription>
-                      Enter your credentials to access your account
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+          {showForgotPassword ? (
+            <Card>
+              <form onSubmit={handleForgotPassword}>
+                <CardHeader>
+                  <CardTitle>Reset Password</CardTitle>
+                  <CardDescription>
+                    Enter your email address and we'll send you a link to reset your password
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="reset-email">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input 
-                        id="email"
+                        id="reset-email"
                         type="email" 
                         placeholder="name@example.com"
-                        value={loginEmail}
-                        onChange={(e) => setLoginEmail(e.target.value)}
+                        value={forgotPasswordEmail}
+                        onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                        className="pl-10"
                         required
                       />
                     </div>
+                  </div>
+                </CardContent>
+                
+                <CardFooter className="flex flex-col gap-4">
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-quiz-primary hover:bg-quiz-primary-light"
+                    disabled={isResettingPassword}
+                  >
+                    {isResettingPassword ? "Sending Reset Link..." : "Send Reset Link"}
+                  </Button>
+                  
+                  <Button 
+                    type="button"
+                    variant="ghost"
+                    className="w-full"
+                    onClick={() => setShowForgotPassword(false)}
+                  >
+                    Back to Login
+                  </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          ) : (
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="login">Login</TabsTrigger>
+                <TabsTrigger value="register">Register</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="login">
+                <Card>
+                  <form onSubmit={handleLogin}>
+                    <CardHeader>
+                      <CardTitle>Login</CardTitle>
+                      <CardDescription>
+                        Enter your credentials to access your account
+                      </CardDescription>
+                    </CardHeader>
                     
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="password">Password</Label>
-                        <a href="#" className="text-xs text-quiz-primary hover:underline">
-                          Forgot password?
-                        </a>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            id="email"
+                            type="email" 
+                            placeholder="name@example.com"
+                            value={loginEmail}
+                            onChange={(e) => setLoginEmail(e.target.value)}
+                            className="pl-10"
+                            required
+                          />
+                        </div>
                       </div>
-                      <Input 
-                        id="password"
-                        type="password" 
-                        placeholder="••••••••"
-                        value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </CardContent>
-                  
-                  <CardFooter className="flex-col gap-4">
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-quiz-primary hover:bg-quiz-primary-light"
-                      disabled={isLoggingIn}
-                    >
-                      {isLoggingIn ? "Logging in..." : "Login"}
-                    </Button>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="password">Password</Label>
+                          <button 
+                            type="button"
+                            onClick={() => setShowForgotPassword(true)}
+                            className="text-xs text-quiz-primary hover:underline"
+                          >
+                            Forgot password?
+                          </button>
+                        </div>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            id="password"
+                            type="password" 
+                            placeholder="••••••••"
+                            value={loginPassword}
+                            onChange={(e) => setLoginPassword(e.target.value)}
+                            className="pl-10"
+                            required
+                          />
+                        </div>
+                      </div>
+                    </CardContent>
                     
-                    <Button 
-                      type="button"
-                      variant="outline"
-                      className="w-full"
-                      onClick={handleDemoLogin}
-                      disabled={isLoggingIn}
-                    >
-                      Try Demo Account
-                    </Button>
-                  </CardFooter>
-                </form>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="register">
-              <Card>
-                <form onSubmit={handleRegister}>
-                  <CardHeader>
-                    <CardTitle>Create an Account</CardTitle>
-                    <CardDescription>
-                      Enter your information to create a new account
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input 
-                        id="name"
-                        placeholder="John Doe"
-                        value={registerName}
-                        onChange={(e) => setRegisterName(e.target.value)}
-                        required
-                      />
-                    </div>
+                    <CardFooter className="flex-col gap-4">
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-quiz-primary hover:bg-quiz-primary-light"
+                        disabled={isLoggingIn}
+                      >
+                        {isLoggingIn ? "Logging in..." : "Login"}
+                      </Button>
+                      
+                      <Button 
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={handleDemoLogin}
+                        disabled={isLoggingIn}
+                      >
+                        Try Demo Account
+                      </Button>
+                    </CardFooter>
+                  </form>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="register">
+                <Card>
+                  <form onSubmit={handleRegister}>
+                    <CardHeader>
+                      <CardTitle>Create an Account</CardTitle>
+                      <CardDescription>
+                        Enter your information to create a new account
+                      </CardDescription>
+                    </CardHeader>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="register-email">Email</Label>
-                      <Input 
-                        id="register-email"
-                        type="email" 
-                        placeholder="name@example.com"
-                        value={registerEmail}
-                        onChange={(e) => setRegisterEmail(e.target.value)}
-                        required
-                      />
-                    </div>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Full Name</Label>
+                        <Input 
+                          id="name"
+                          placeholder="John Doe"
+                          value={registerName}
+                          onChange={(e) => setRegisterName(e.target.value)}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="register-email">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            id="register-email"
+                            type="email" 
+                            placeholder="name@example.com"
+                            value={registerEmail}
+                            onChange={(e) => setRegisterEmail(e.target.value)}
+                            className="pl-10"
+                            required
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="register-password">Password</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            id="register-password"
+                            type="password" 
+                            placeholder="••••••••"
+                            value={registerPassword}
+                            onChange={(e) => setRegisterPassword(e.target.value)}
+                            className="pl-10"
+                            required
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="confirm-password">Confirm Password</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            id="confirm-password"
+                            type="password" 
+                            placeholder="••••••••"
+                            value={registerConfirmPassword}
+                            onChange={(e) => setRegisterConfirmPassword(e.target.value)}
+                            className="pl-10"
+                            required
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="text-xs text-muted-foreground">
+                        By registering, you agree to our 
+                        <a href="/terms" className="text-quiz-primary hover:underline mx-1">Terms of Service</a>
+                        and
+                        <a href="/privacy" className="text-quiz-primary hover:underline mx-1">Privacy Policy</a>
+                      </div>
+                    </CardContent>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="register-password">Password</Label>
-                      <Input 
-                        id="register-password"
-                        type="password" 
-                        placeholder="••••••••"
-                        value={registerPassword}
-                        onChange={(e) => setRegisterPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="confirm-password">Confirm Password</Label>
-                      <Input 
-                        id="confirm-password"
-                        type="password" 
-                        placeholder="••••••••"
-                        value={registerConfirmPassword}
-                        onChange={(e) => setRegisterConfirmPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-                    
-                    <div className="text-xs text-muted-foreground">
-                      By registering, you agree to our 
-                      <a href="/terms" className="text-quiz-primary hover:underline mx-1">Terms of Service</a>
-                      and
-                      <a href="/privacy" className="text-quiz-primary hover:underline mx-1">Privacy Policy</a>
-                    </div>
-                  </CardContent>
-                  
-                  <CardFooter>
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-quiz-primary hover:bg-quiz-primary-light"
-                      disabled={isRegistering}
-                    >
-                      {isRegistering ? "Creating Account..." : "Create Account"}
-                    </Button>
-                  </CardFooter>
-                </form>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                    <CardFooter>
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-quiz-primary hover:bg-quiz-primary-light"
+                        disabled={isRegistering}
+                      >
+                        {isRegistering ? "Creating Account..." : "Create Account"}
+                      </Button>
+                    </CardFooter>
+                  </form>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          )}
         </div>
       </main>
       
