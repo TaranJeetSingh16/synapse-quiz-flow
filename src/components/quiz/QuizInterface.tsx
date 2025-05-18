@@ -26,6 +26,7 @@ const QuizInterface = () => {
     answerQuestion,
     nextQuestion,
     useHint,
+    totalQuestions,
   } = useQuiz();
   
   const [showHint, setShowHint] = useState(false);
@@ -62,7 +63,7 @@ const QuizInterface = () => {
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
         <div className="flex items-center mb-2 sm:mb-0">
           <Badge variant="outline" className="mr-2 bg-primary/10 text-primary border-primary/20">
-            Question {answeredQuestions + 1}/10
+            Question {answeredQuestions + 1}/{totalQuestions}
           </Badge>
           
           <Badge variant="outline" className={`${getDifficultyColor(currentQuestion.difficulty)} text-white border-0`}>
@@ -198,9 +199,9 @@ const QuizInterface = () => {
       {/* Progress bar */}
       <div className="mb-2 flex justify-between text-xs text-muted-foreground">
         <span>Quiz Progress</span>
-        <span>{answeredQuestions}/10 questions</span>
+        <span>{answeredQuestions}/{totalQuestions} questions</span>
       </div>
-      <Progress value={answeredQuestions * 10} className="h-2" />
+      <Progress value={(answeredQuestions / totalQuestions) * 100} className="h-2" />
       
       {/* Hint Dialog */}
       <Dialog open={showHint} onOpenChange={setShowHint}>

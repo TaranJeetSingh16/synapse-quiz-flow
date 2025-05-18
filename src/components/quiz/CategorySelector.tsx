@@ -8,51 +8,44 @@ interface Category {
   name: string;
   icon: string;
   description: string;
-  questionCount: number;
 }
 
-const categories: Category[] = [
+const categories = [
   {
     id: 'all',
     name: 'All Categories',
     icon: '📚',
     description: 'Questions from all available topics',
-    questionCount: 50,
   },
   {
     id: 'science',
     name: 'Science',
     icon: '🔬',
     description: 'Physics, Chemistry, Biology and more',
-    questionCount: 50,
   },
   {
     id: 'history',
     name: 'History',
     icon: '🏛️',
     description: 'World events and important dates',
-    questionCount: 50,
   },
   {
     id: 'programming',
     name: 'Programming',
     icon: '💻',
     description: 'Coding concepts and languages',
-    questionCount: 50,
   },
   {
     id: 'geography',
     name: 'Geography',
     icon: '🌍',
     description: 'Countries, capitals, and landmarks',
-    questionCount: 50,
   },
   {
     id: 'art',
     name: 'Art',
     icon: '🎨',
     description: 'Paintings, artists, and movements',
-    questionCount: 50,
   },
 ];
 
@@ -79,7 +72,7 @@ const CategorySelector = ({ onSelectCategory }: CategorySelectorProps) => {
               <div className="flex justify-between items-center">
                 <div className="text-3xl">{category.icon}</div>
                 <div className="text-xs font-medium bg-secondary/50 px-2 py-1 rounded">
-                  {category.questionCount} questions
+                  5-10 questions
                 </div>
               </div>
               <CardTitle className="mt-2">{category.name}</CardTitle>

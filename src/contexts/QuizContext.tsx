@@ -34,6 +34,7 @@ interface QuizContextType {
   brainwaveData: BrainwaveData;
   selectedCategory: string;
   difficultyLevel: number;
+  totalQuestions: number;
   startQuiz: (category: string) => void;
   endQuiz: () => void;
   answerQuestion: (answerId: string) => void;
@@ -169,6 +170,77 @@ const mockQuestions: Question[] = [
     hint: 'This principle involves limitations on what we can know about particles.',
     category: 'Physics',
   },
+  {
+    id: '9',
+    text: 'Who painted the Mona Lisa?',
+    type: 'text',
+    difficulty: 1,
+    options: [
+      { id: 'a', text: 'Vincent van Gogh', isCorrect: false },
+      { id: 'b', text: 'Pablo Picasso', isCorrect: false },
+      { id: 'c', text: 'Leonardo da Vinci', isCorrect: true },
+      { id: 'd', text: 'Michelangelo', isCorrect: false },
+    ],
+    explanation: 'The Mona Lisa was painted by Leonardo da Vinci between 1503 and 1519.',
+    category: 'Art',
+  },
+  {
+    id: '10',
+    text: 'Which ancient civilization built Machu Picchu?',
+    type: 'text',
+    difficulty: 3,
+    options: [
+      { id: 'a', text: 'Mayans', isCorrect: false },
+      { id: 'b', text: 'Incas', isCorrect: true },
+      { id: 'c', text: 'Aztecs', isCorrect: false },
+      { id: 'd', text: 'Egyptians', isCorrect: false },
+    ],
+    explanation: 'Machu Picchu was built by the Incas in the 15th century.',
+    category: 'History',
+  },
+  {
+    id: '11',
+    text: 'What is the largest ocean on Earth?',
+    type: 'text',
+    difficulty: 1,
+    options: [
+      { id: 'a', text: 'Atlantic Ocean', isCorrect: false },
+      { id: 'b', text: 'Indian Ocean', isCorrect: false },
+      { id: 'c', text: 'Arctic Ocean', isCorrect: false },
+      { id: 'd', text: 'Pacific Ocean', isCorrect: true },
+    ],
+    explanation: 'The Pacific Ocean is the largest and deepest ocean on Earth, covering more than 30% of the Earth\'s surface.',
+    category: 'Geography',
+  },
+  {
+    id: '12',
+    text: 'What is the chemical symbol for gold?',
+    type: 'text',
+    difficulty: 2,
+    options: [
+      { id: 'a', text: 'Go', isCorrect: false },
+      { id: 'b', text: 'Gd', isCorrect: false },
+      { id: 'c', text: 'Au', isCorrect: true },
+      { id: 'd', text: 'Ag', isCorrect: false },
+    ],
+    explanation: 'Au is the chemical symbol for gold, derived from the Latin word "aurum".',
+    category: 'Science',
+  },
+  {
+    id: '13',
+    text: 'Which programming concept is based on the principle of "objects containing data and methods"?',
+    type: 'text',
+    difficulty: 3,
+    options: [
+      { id: 'a', text: 'Functional Programming', isCorrect: false },
+      { id: 'b', text: 'Object-Oriented Programming', isCorrect: true },
+      { id: 'c', text: 'Procedural Programming', isCorrect: false },
+      { id: 'd', text: 'Event-Driven Programming', isCorrect: false },
+    ],
+    explanation: 'Object-Oriented Programming (OOP) is based on the concept of objects containing data and code that operates on that data.',
+    hint: 'Think about programming that focuses on creating reusable "things" with properties and behaviors.',
+    category: 'Programming',
+  },
 ];
 
 interface QuizProviderProps {
@@ -190,6 +262,7 @@ export const QuizProvider = ({ children }: QuizProviderProps) => {
   const [brainwaveData, setBrainwaveData] = useState<BrainwaveData>(defaultBrainwave);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [difficultyLevel, setDifficultyLevel] = useState(2);
+  const [totalQuestions, setTotalQuestions] = useState(0);
 
   // Simulate brainwave data updates
   useEffect(() => {
@@ -263,16 +336,22 @@ export const QuizProvider = ({ children }: QuizProviderProps) => {
     setSelectedCategory(category);
     
     // Filter questions by category if specified
-    const filtered = category === 'All' 
+    const filtered = category === 'All Categories' 
       ? questions 
       : questions.filter(q => q.category === category);
     
-    setFilteredQuestions(filtered);
+    // Randomly select between 5-10 questions for this quiz
+    const quizQuestionCount = Math.floor(Math.random() * 6) + 5; // Random number between 5-10
+    const shuffledQuestions = [...filtered].sort(() => 0.5 - Math.random());
+    const selectedQuestions = shuffledQuestions.slice(0, quizQuestionCount);
     
-    if (filtered.length > 0) {
+    setFilteredQuestions(selectedQuestions);
+    setTotalQuestions(quizQuestionCount);
+    
+    if (selectedQuestions.length > 0) {
       // Start with an appropriate difficulty question
-      const easyQuestions = filtered.filter(q => q.difficulty <= 2);
-      setCurrentQuestion(easyQuestions.length > 0 ? easyQuestions[0] : filtered[0]);
+      const easyQuestions = selectedQuestions.filter(q => q.difficulty <= 2);
+      setCurrentQuestion(easyQuestions.length > 0 ? easyQuestions[0] : selectedQuestions[0]);
       setQuizStarted(true);
       setQuizFinished(false);
       setAnsweredQuestions(0);
@@ -321,7 +400,7 @@ export const QuizProvider = ({ children }: QuizProviderProps) => {
   const nextQuestion = () => {
     setAnsweredQuestions(prev => prev + 1);
     
-    if (answeredQuestions >= 9) {
+    if (answeredQuestions >= totalQuestions - 1) {
       endQuiz();
       return;
     }
@@ -340,8 +419,13 @@ export const QuizProvider = ({ children }: QuizProviderProps) => {
       setCurrentQuestion(availableQuestions[randomIndex]);
     } else {
       // If no questions match current difficulty, just pick a random one
-      const randomIndex = Math.floor(Math.random() * filteredQuestions.length);
-      setCurrentQuestion(filteredQuestions[randomIndex]);
+      const remainingQuestions = filteredQuestions.filter(q => q.id !== currentQuestion?.id);
+      if (remainingQuestions.length > 0) {
+        const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+        setCurrentQuestion(remainingQuestions[randomIndex]);
+      } else {
+        endQuiz(); // If somehow we run out of questions
+      }
     }
   };
 
@@ -389,6 +473,7 @@ export const QuizProvider = ({ children }: QuizProviderProps) => {
         brainwaveData,
         selectedCategory,
         difficultyLevel,
+        totalQuestions,
         startQuiz,
         endQuiz,
         answerQuestion,
