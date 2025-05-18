@@ -7,7 +7,6 @@ import PerformanceChart from '@/components/dashboard/PerformanceChart';
 import CategoryPerformance from '@/components/dashboard/CategoryPerformance';
 import RecommendedTopics from '@/components/dashboard/RecommendedTopics';
 import BadgesCard from '@/components/dashboard/BadgesCard';
-import LeaderboardCard from '@/components/dashboard/LeaderboardCard';
 import { useUser } from '@/contexts/UserContext';
 
 const Dashboard = () => {
@@ -35,10 +34,11 @@ const Dashboard = () => {
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <RecommendedTopics />
-              <div className="space-y-6">
+              <div className="lg:col-span-2">
+                <RecommendedTopics />
+              </div>
+              <div>
                 <BadgesCard />
-                <LeaderboardCard />
               </div>
             </div>
           </div>

@@ -62,46 +62,45 @@ const RecommendedTopics = () => {
   const navigate = useNavigate();
   
   const recommendedTopicNames = getRecommendedTopics();
-  const recommendedTopics = recommendedTopicNames.map(name => topicMapping[name]).filter(Boolean);
+  const recommendedTopics = recommendedTopicNames
+    .map(name => topicMapping[name])
+    .filter(Boolean)
+    .slice(0, 3); // Only show top 3 recommendations for better focus
 
   const handleStartQuiz = (topic: string) => {
     startQuiz(topic);
-    navigate('/quiz/session');
+    navigate('/quiz');
   };
 
   return (
-    <Card className="col-span-1 lg:col-span-2">
+    <Card className="h-full">
       <CardHeader className="pb-2">
         <CardTitle>Recommended Next Topics</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {recommendedTopics.map((topic) => (
-            <Card key={topic.id} className="border border-primary/10">
-              <CardHeader className="pb-2">
+            <Card key={topic.id} className="border border-primary/10 h-full flex flex-col">
+              <CardHeader className="pb-2 space-y-0">
                 <div className="flex justify-between items-center">
-                  <div className="text-3xl">{topic.icon}</div>
-                  <div className="flex items-center space-x-2">
-                    <div className="text-xs font-medium bg-secondary/50 px-2 py-1 rounded">
-                      {topic.difficulty}
-                    </div>
-                    <div className="text-xs font-medium bg-secondary/50 px-2 py-1 rounded">
-                      {topic.estimatedTime}
-                    </div>
+                  <div className="text-2xl">{topic.icon}</div>
+                  <div className="text-xs font-medium bg-secondary/50 px-2 py-1 rounded">
+                    {topic.difficulty}
                   </div>
                 </div>
-                <CardTitle className="text-base mt-2">{topic.title}</CardTitle>
+                <CardTitle className="text-sm mt-2">{topic.title}</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm text-muted-foreground pb-2">
+              <CardContent className="text-xs text-muted-foreground pb-2 flex-grow">
                 {topic.description}
               </CardContent>
               <CardFooter className="pt-0">
                 <Button 
                   variant="outline" 
-                  className="w-full border-quiz-primary text-quiz-primary hover:bg-quiz-primary/10"
+                  size="sm"
+                  className="w-full border-quiz-primary text-quiz-primary hover:bg-quiz-primary/10 text-xs"
                   onClick={() => handleStartQuiz(topic.title.split(' ')[0])}
                 >
-                  Start Topic
+                  Start • {topic.estimatedTime}
                 </Button>
               </CardFooter>
             </Card>
