@@ -55,8 +55,7 @@ const Auth = () => {
     // Basic validation
     if (registerPassword !== registerConfirmPassword) {
       toast({
-        title: "Passwords don't match",
-        description: "Please make sure your passwords match.",
+        description: "Passwords don't match. Please make sure your passwords match.",
         variant: "destructive",
       });
       return;
