@@ -20,6 +20,7 @@ import HowItWorks from "./pages/HowItWorks";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import CreateQuiz from "./pages/CreateQuiz";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,11 @@ const App = () => (
               <Route path="/admin" element={
                 <ProtectedRoute>
                   <Admin />
+                </ProtectedRoute>
+              } />
+              <Route path="/create-quiz" element={
+                <ProtectedRoute>
+                  <CreateQuiz />
                 </ProtectedRoute>
               } />
               <Route path="/leaderboard" element={<Leaderboard />} />
