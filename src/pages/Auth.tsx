@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
@@ -54,10 +53,7 @@ const Auth = () => {
     
     // Basic validation
     if (registerPassword !== registerConfirmPassword) {
-      toast({
-        description: "Passwords don't match. Please make sure your passwords match.",
-        variant: "destructive",
-      });
+      toast.error("Passwords don't match. Please make sure your passwords match.");
       return;
     }
     
