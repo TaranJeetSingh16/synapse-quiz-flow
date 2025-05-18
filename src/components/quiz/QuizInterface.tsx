@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { InfoIcon, HelpCircleIcon, ChevronRight } from 'lucide-react';
+import { InfoIcon, HelpCircleIcon, ChevronRight, BrainIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -85,10 +85,13 @@ const QuizInterface = () => {
       </div>
       
       {/* Brainwave Simulation UI */}
-      <div className="mb-6 bg-card p-3 rounded-lg border">
-        <div className="flex justify-between text-xs text-muted-foreground mb-1">
-          <span>Brainwave Simulation</span>
-          <span>{Math.round(brainwaveData.attention)}% attention</span>
+      <div className="mb-6 bg-card p-3 rounded-lg border relative">
+        <div className="flex justify-between items-center text-xs text-muted-foreground mb-1">
+          <span className="flex items-center gap-1">
+            <BrainIcon className="h-3 w-3" />
+            AI Adaptation
+          </span>
+          <span>{Math.round(brainwaveData.attention)}% focus</span>
         </div>
         
         <div className="flex gap-1 h-2">
@@ -103,6 +106,12 @@ const QuizInterface = () => {
               }}
             />
           ))}
+        </div>
+        
+        <div className="absolute right-3 top-2 text-xs text-muted-foreground">
+          <span className="bg-primary/10 rounded-full px-2 py-0.5 text-xs">
+            Adaptive
+          </span>
         </div>
       </div>
       
@@ -147,11 +156,17 @@ const QuizInterface = () => {
                   !selectedAnswer ? 'hover:bg-primary/10 hover:text-primary' : ''
                 } ${
                   selectedAnswer && option.isCorrect ? 'bg-success/90 hover:bg-success/90 text-white' : ''
+                } ${
+                  selectedAnswer === null ? 'group' : ''
                 }`}
                 disabled={!!selectedAnswer}
                 onClick={() => answerQuestion(option.id)}
               >
-                <span className="w-6 h-6 rounded-full border flex items-center justify-center mr-3">
+                <span className={`w-6 h-6 rounded-full border flex items-center justify-center mr-3 group-hover:bg-primary/20 group-hover:border-primary/50 transition-colors ${
+                  selectedAnswer === option.id ? 'bg-white text-destructive' : ''
+                } ${
+                  selectedAnswer && option.isCorrect ? 'bg-white text-success' : ''
+                }`}>
                   {option.id}
                 </span>
                 {option.text}
@@ -166,7 +181,7 @@ const QuizInterface = () => {
             size="sm"
             disabled={!currentQuestion.hint || !!selectedAnswer}
             onClick={handleUseHint}
-            className="text-muted-foreground hover:text-primary"
+            className={`text-muted-foreground ${currentQuestion.hint && !selectedAnswer ? 'hover:text-primary' : ''}`}
           >
             <HelpCircleIcon className="w-4 h-4 mr-1" />
             Use Hint

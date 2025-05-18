@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Sparkles } from 'lucide-react';
 
 interface Category {
   id: string;
@@ -57,7 +58,10 @@ const CategorySelector = ({ onSelectCategory }: CategorySelectorProps) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold">Choose a Category</h2>
+        <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-2">
+          Choose a Category
+          <Sparkles className="h-5 w-5 text-quiz-primary" />
+        </h2>
         <p className="text-muted-foreground mt-2">Select a topic to start your adaptive quiz</p>
       </div>
       
@@ -65,12 +69,12 @@ const CategorySelector = ({ onSelectCategory }: CategorySelectorProps) => {
         {categories.map((category) => (
           <Card 
             key={category.id} 
-            className="cursor-pointer hover:shadow-md hover:border-quiz-primary/50 transition-all"
+            className="cursor-pointer hover:shadow-md hover:border-quiz-primary/50 transition-all group"
             onClick={() => onSelectCategory(category.name)}
           >
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
-                <div className="text-3xl">{category.icon}</div>
+                <div className="text-3xl group-hover:scale-110 transition-transform">{category.icon}</div>
                 <div className="text-xs font-medium bg-secondary/50 px-2 py-1 rounded">
                   5-10 questions
                 </div>
@@ -81,7 +85,7 @@ const CategorySelector = ({ onSelectCategory }: CategorySelectorProps) => {
             <CardContent>
               <Button 
                 variant="outline" 
-                className="w-full border-quiz-primary text-quiz-primary hover:bg-quiz-primary/10"
+                className="w-full border-quiz-primary text-quiz-primary hover:bg-quiz-primary/10 group-hover:bg-quiz-primary group-hover:text-white transition-colors"
                 onClick={() => onSelectCategory(category.name)}
               >
                 Start Quiz
