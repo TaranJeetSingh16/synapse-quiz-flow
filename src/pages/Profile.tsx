@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { useUser } from '@/contexts/UserContext';
@@ -10,10 +10,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { toast } from '@/components/ui/sonner';
+import { Link } from 'react-router-dom';
 
 const Profile = () => {
-  const { user, stats } = useUser();
+  const { user, stats, updateProfile, updatePassword } = useUser();
   
   // Profile state
   const [name, setName] = useState(user.name);
@@ -24,23 +26,27 @@ const Profile = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   
-  // Notification preferences
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [quizReminders, setQuizReminders] = useState(true);
-  const [friendActivity, setFriendActivity] = useState(false);
+  // Update local state when user data changes
+  useEffect(() => {
+    setName(user.name);
+    setEmail(user.email);
+  }, [user.name, user.email]);
   
-  const handleProfileUpdate = (e: React.FormEvent) => {
+  const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
     
-    // Simulate profile update
-    setTimeout(() => {
+    try {
+      // Use the updateProfile method from context
+      await updateProfile(name, email);
+    } catch (error) {
+      toast.error("Failed to update profile");
+    } finally {
       setIsSaving(false);
-      toast.success('Profile updated successfully');
-    }, 1000);
+    }
   };
   
-  const handlePasswordChange = (e: React.FormEvent) => {
+  const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (newPassword !== confirmPassword) {
@@ -50,23 +56,17 @@ const Profile = () => {
     
     setIsChangingPassword(true);
     
-    // Simulate password change
-    setTimeout(() => {
-      setIsChangingPassword(false);
+    try {
+      // Use the updatePassword method from context
+      await updatePassword(currentPassword, newPassword);
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      toast.success('Password changed successfully');
-    }, 1000);
-  };
-  
-  const handleNotificationPreferences = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Simulate saving notification preferences
-    setTimeout(() => {
-      toast.success('Notification preferences updated');
-    }, 500);
+    } catch (error) {
+      toast.error("Failed to update password");
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   return (
@@ -90,10 +90,9 @@ const Profile = () => {
           </div>
           
           <Tabs defaultValue="account" className="w-full">
-            <TabsList className="grid w-full max-w-md grid-cols-3 mb-8">
+            <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
               <TabsTrigger value="account">Account</TabsTrigger>
               <TabsTrigger value="security">Security</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
             </TabsList>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -138,6 +137,14 @@ const Profile = () => {
                               Change Avatar
                             </Button>
                           </div>
+                        </div>
+                        
+                        <div className="pt-2">
+                          <Link to="/settings">
+                            <Button type="button" variant="outline" className="w-full">
+                              Manage Additional Settings
+                            </Button>
+                          </Link>
                         </div>
                       </CardContent>
                       
@@ -206,66 +213,6 @@ const Profile = () => {
                           disabled={isChangingPassword}
                         >
                           {isChangingPassword ? "Updating..." : "Update Password"}
-                        </Button>
-                      </CardFooter>
-                    </form>
-                  </Card>
-                </TabsContent>
-                
-                <TabsContent value="notifications">
-                  <Card>
-                    <form onSubmit={handleNotificationPreferences}>
-                      <CardHeader>
-                        <CardTitle>Notification Preferences</CardTitle>
-                        <CardDescription>
-                          Manage how and when you receive notifications
-                        </CardDescription>
-                      </CardHeader>
-                      
-                      <CardContent className="space-y-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium">Email Notifications</p>
-                            <p className="text-sm text-muted-foreground">Receive important updates via email</p>
-                          </div>
-                          <input 
-                            type="checkbox" 
-                            className="toggle toggle-primary" 
-                            checked={emailNotifications}
-                            onChange={() => setEmailNotifications(!emailNotifications)}
-                          />
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium">Quiz Reminders</p>
-                            <p className="text-sm text-muted-foreground">Get reminded about your daily quizzes</p>
-                          </div>
-                          <input 
-                            type="checkbox" 
-                            className="toggle toggle-primary" 
-                            checked={quizReminders}
-                            onChange={() => setQuizReminders(!quizReminders)}
-                          />
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium">Friend Activity</p>
-                            <p className="text-sm text-muted-foreground">Notifications about your friends' progress</p>
-                          </div>
-                          <input 
-                            type="checkbox" 
-                            className="toggle toggle-primary" 
-                            checked={friendActivity}
-                            onChange={() => setFriendActivity(!friendActivity)}
-                          />
-                        </div>
-                      </CardContent>
-                      
-                      <CardFooter>
-                        <Button type="submit" className="bg-quiz-primary hover:bg-quiz-primary-light">
-                          Save Preferences
                         </Button>
                       </CardFooter>
                     </form>

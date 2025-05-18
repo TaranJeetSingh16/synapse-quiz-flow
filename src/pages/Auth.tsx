@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
@@ -48,7 +49,7 @@ const Auth = () => {
     }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Basic validation
@@ -59,36 +60,55 @@ const Auth = () => {
     
     setIsRegistering(true);
     
-    // Simulate registration process
-    setTimeout(() => {
-      setIsRegistering(false);
+    try {
+      // Simulate registration process
+      await new Promise(resolve => setTimeout(resolve, 1500));
       toast.success("Registration successful! Welcome to BrainWave Quiz!");
-      navigate('/dashboard');
-    }, 1500);
+      
+      // Auto login after registration
+      const success = await login(registerEmail, registerPassword);
+      if (success) {
+        navigate('/dashboard');
+      }
+    } finally {
+      setIsRegistering(false);
+    }
   };
 
-  const handleDemoLogin = () => {
+  const handleDemoLogin = async () => {
     setIsLoggingIn(true);
     
-    // Simulate demo login
-    setTimeout(() => {
+    try {
+      // Demo credentials
+      const demoEmail = "demo@example.com";
+      const demoPassword = "demopass";
+      
+      // Use the regular login function with demo credentials
+      const success = await login(demoEmail, demoPassword);
+      if (success) {
+        toast.success("Demo login successful! Welcome to BrainWave Quiz!");
+        navigate('/dashboard');
+      } else {
+        toast.error("Demo login failed. Please try again.");
+      }
+    } finally {
       setIsLoggingIn(false);
-      toast.success("Demo login successful");
-      navigate('/dashboard');
-    }, 1000);
+    }
   };
   
-  const handleForgotPassword = (e: React.FormEvent) => {
+  const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsResettingPassword(true);
     
-    // Simulate password reset email
-    setTimeout(() => {
-      setIsResettingPassword(false);
+    try {
+      // Simulate password reset email
+      await new Promise(resolve => setTimeout(resolve, 1500));
       setShowForgotPassword(false);
       setForgotPasswordEmail('');
       toast.success("Password reset link sent! Please check your email.");
-    }, 1500);
+    } finally {
+      setIsResettingPassword(false);
+    }
   };
 
   return (

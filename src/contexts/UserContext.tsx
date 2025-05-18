@@ -51,6 +51,9 @@ interface UserContextType {
   logout: () => void;
   updateUserStats: (quizResults: { correct: number; total: number; category: string; xp: number }) => void;
   earnBadge: (badgeId: string) => void;
+  updateProfile: (name: string, email: string) => Promise<boolean>;
+  updatePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
+  updateNotificationSettings: (settings: { emailNotifications: boolean, quizReminders: boolean, friendActivity: boolean }) => Promise<boolean>;
 }
 
 // Mock data
@@ -120,7 +123,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     name: 'Learner',
     email: 'learner@example.com',
     avatar: '🧑‍🎓',
-    isLoggedIn: true, // Auto-logged in for demo
+    isLoggedIn: false, // Starting as logged out
   });
   
   const [stats, setStats] = useState<UserStats>({
@@ -141,12 +144,42 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   const [friends, setFriends] = useState<Friend[]>(mockFriends);
   const [leaderboard, setLeaderboard] = useState<Friend[]>(mockLeaderboard);
   const [isAdmin, setIsAdmin] = useState(false);
+  
+  // Load user data from localStorage on initial load
+  useEffect(() => {
+    const savedUser = localStorage.getItem('brainwave_user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  // Save user data to localStorage whenever it changes
+  useEffect(() => {
+    if (user.isLoggedIn) {
+      localStorage.setItem('brainwave_user', JSON.stringify(user));
+    }
+  }, [user]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Normally would be an API call
+    // Demo login handling
+    if (email === 'demo@example.com' && password === 'demopass') {
+      setUser({
+        id: 'demo123',
+        name: 'Demo User',
+        email: 'demo@example.com',
+        avatar: '👤',
+        isLoggedIn: true,
+      });
+      
+      toast.success(`Welcome, Demo User!`);
+      return true;
+    }
+    
+    // Normal login (simulated)
     if (email && password) {
       setUser({
         ...user,
+        email,
         isLoggedIn: true,
       });
       
@@ -157,6 +190,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       toast.success(`Welcome back, ${user.name}!`);
       return true;
     }
+    
     toast.error('Invalid credentials');
     return false;
   };
@@ -167,6 +201,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       isLoggedIn: false,
     });
     setIsAdmin(false);
+    localStorage.removeItem('brainwave_user');
     toast.success('Logged out successfully');
   };
 
@@ -233,6 +268,36 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     }
   };
 
+  const updateProfile = async (name: string, email: string): Promise<boolean> => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setUser(prev => ({
+      ...prev,
+      name,
+      email
+    }));
+    
+    toast.success("Profile updated successfully");
+    return true;
+  };
+
+  const updatePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    toast.success("Password changed successfully");
+    return true;
+  };
+
+  const updateNotificationSettings = async (settings: { emailNotifications: boolean, quizReminders: boolean, friendActivity: boolean }): Promise<boolean> => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    toast.success("Notification settings updated successfully");
+    return true;
+  };
+
   return (
     <UserContext.Provider 
       value={{
@@ -245,6 +310,9 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         logout,
         updateUserStats,
         earnBadge,
+        updateProfile,
+        updatePassword,
+        updateNotificationSettings
       }}
     >
       {children}

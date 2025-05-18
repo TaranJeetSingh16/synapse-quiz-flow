@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, BookOpen, HelpCircle, FileText, MessageSquare } from 'lucide-react';
+import { toast } from '@/components/ui/sonner';
 
 const helpCategories = [
   {
@@ -44,18 +45,6 @@ const helpCategories = [
       'Privacy settings',
       'Subscription management'
     ]
-  },
-  {
-    id: 'cat-4',
-    title: 'Troubleshooting',
-    icon: <MessageSquare className="h-5 w-5" />,
-    description: 'Solve common issues',
-    topics: [
-      'Login problems',
-      'Performance issues',
-      'Content loading errors',
-      'Payment processing'
-    ]
   }
 ];
 
@@ -69,6 +58,20 @@ const commonQuestions = [
 ];
 
 const Help = () => {
+  const handleContactSupport = () => {
+    // Create a mailto link with pre-filled content
+    const subject = encodeURIComponent("BrainWave Quiz Support Request");
+    const body = encodeURIComponent(
+      "Hello BrainWave Quiz Support Team,\n\nI need assistance with the following issue:\n\n[Please describe your issue here]\n\nUser Details:\nName: [Your Name]\nEmail: [Your Email]\n\nThank you!"
+    );
+    window.location.href = `mailto:support@brainwavequiz.com?subject=${subject}&body=${body}`;
+    toast.success("Opening your email client...");
+  };
+
+  const handleSubmitTicket = () => {
+    toast.success("Ticket submitted successfully! Our support team will contact you within 24 hours.");
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -155,10 +158,10 @@ const Help = () => {
                 Our support team is here to help you with any questions or issues you might have.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button>
+                <Button onClick={handleContactSupport}>
                   Contact Support
                 </Button>
-                <Button variant="outline">
+                <Button variant="outline" onClick={handleSubmitTicket}>
                   Submit a Ticket
                 </Button>
               </div>
