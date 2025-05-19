@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuiz } from '@/contexts/QuizContext';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -34,9 +33,12 @@ const QuizInterface = () => {
   const [showExplanation, setShowExplanation] = useState(false);
   
   const handleUseHint = () => {
-    const hintText = useHint();
-    setHint(hintText);
-    setShowHint(!!hintText);
+    if (currentQuestion) {
+      // Get the hint directly from the current question rather than through useHint()
+      const hintText = useHint();
+      setHint(hintText);
+      setShowHint(true);
+    }
   };
   
   const getDifficultyColor = (difficulty: number): string => {
