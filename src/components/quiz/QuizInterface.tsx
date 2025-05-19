@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuiz } from '@/contexts/QuizContext';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -22,9 +23,9 @@ const QuizInterface = () => {
     timeLeft, 
     streak,
     brainwaveData,
+    useHint,
     answerQuestion,
     nextQuestion,
-    useHint,
     totalQuestions,
   } = useQuiz();
   
@@ -34,7 +35,6 @@ const QuizInterface = () => {
   
   const handleUseHint = () => {
     if (currentQuestion) {
-      // Get the hint directly from the current question rather than through useHint()
       const hintText = useHint();
       setHint(hintText);
       setShowHint(true);
@@ -55,6 +55,16 @@ const QuizInterface = () => {
   const handleNextQuestion = () => {
     setShowExplanation(false);
     nextQuestion();
+  };
+
+  const getCorrectAnswer = () => {
+    if (!currentQuestion) return '';
+    
+    const correctOption = currentQuestion.options.find(opt => opt.isCorrect);
+    if (correctOption) {
+      return `${correctOption.id}: ${correctOption.text}`;
+    }
+    return 'No correct answer found';
   };
   
   if (!currentQuestion) return null;
@@ -229,8 +239,12 @@ const QuizInterface = () => {
               Using a hint will cost 5 XP points
             </DialogDescription>
           </DialogHeader>
-          <div className="bg-secondary/50 p-4 rounded-md">
+          <div className="bg-secondary/50 p-4 rounded-md mb-4">
             {hint}
+          </div>
+          <div className="bg-success/20 p-4 rounded-md border border-success/30">
+            <p className="font-medium mb-1 text-success">Correct Answer:</p>
+            <p>{getCorrectAnswer()}</p>
           </div>
         </DialogContent>
       </Dialog>
