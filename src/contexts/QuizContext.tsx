@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from '@/components/ui/sonner';
 
@@ -9,7 +8,7 @@ export interface Question {
   difficulty: 1 | 2 | 3 | 4 | 5;
   options: { id: string; text: string; isCorrect: boolean }[];
   explanation: string;
-  hint?: string;
+  hint: string; // Changed from optional to required
   category: string;
   imageUrl?: string;
 }
@@ -81,6 +80,7 @@ const mockQuestions: Question[] = [
       { id: 'd', text: 'Mercury', isCorrect: false },
     ],
     explanation: 'Mars appears red because its surface contains iron oxide, or rust.',
+    hint: 'The name of this planet comes from the Roman god of war.',
     category: 'Science',
   },
   {
@@ -95,6 +95,7 @@ const mockQuestions: Question[] = [
       { id: 'd', text: 'Bangkok', isCorrect: false },
     ],
     explanation: 'Tokyo has been the capital of Japan since 1868.',
+    hint: 'This city was formerly known as Edo before becoming the capital.',
     category: 'Geography',
   },
   {
@@ -124,6 +125,7 @@ const mockQuestions: Question[] = [
       { id: 'd', text: 'Elephant', isCorrect: false },
     ],
     explanation: 'Crocodiles are reptiles, while dolphins, bats, and elephants are all mammals.',
+    hint: 'Mammals typically give birth to live young and produce milk, while this animal lays eggs.',
     category: 'Biology',
     imageUrl: 'https://images.unsplash.com/photo-1580367100546-a521a7eb55bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
   },
@@ -139,6 +141,7 @@ const mockQuestions: Question[] = [
       { id: 'd', text: 'Ruby', isCorrect: false },
     ],
     explanation: 'Python has become the go-to language for AI, machine learning, and data science due to its rich ecosystem of libraries like NumPy, TensorFlow, and PyTorch.',
+    hint: 'This language is named after a British comedy group and is known for its readability.',
     category: 'Programming',
   },
   {
@@ -153,6 +156,7 @@ const mockQuestions: Question[] = [
       { id: 'd', text: '2010', isCorrect: false },
     ],
     explanation: 'The first iPhone was released by Apple in 2007, revolutionizing the smartphone industry.',
+    hint: 'Steve Jobs made this announcement in the same year as the final Harry Potter book was published.',
     category: 'Technology',
   },
   {
@@ -182,6 +186,7 @@ const mockQuestions: Question[] = [
       { id: 'd', text: 'Michelangelo', isCorrect: false },
     ],
     explanation: 'The Mona Lisa was painted by Leonardo da Vinci between 1503 and 1519.',
+    hint: 'This Italian artist was also known for his inventions and detailed anatomical drawings.',
     category: 'Art',
   },
   {
@@ -196,6 +201,7 @@ const mockQuestions: Question[] = [
       { id: 'd', text: 'Egyptians', isCorrect: false },
     ],
     explanation: 'Machu Picchu was built by the Incas in the 15th century.',
+    hint: 'This South American civilization had its center in modern-day Peru.',
     category: 'History',
   },
   {
@@ -210,6 +216,7 @@ const mockQuestions: Question[] = [
       { id: 'd', text: 'Pacific Ocean', isCorrect: true },
     ],
     explanation: 'The Pacific Ocean is the largest and deepest ocean on Earth, covering more than 30% of the Earth\'s surface.',
+    hint: 'The name of this ocean means "peaceful" in Latin.',
     category: 'Geography',
   },
   {
@@ -224,6 +231,7 @@ const mockQuestions: Question[] = [
       { id: 'd', text: 'Ag', isCorrect: false },
     ],
     explanation: 'Au is the chemical symbol for gold, derived from the Latin word "aurum".',
+    hint: 'The symbol comes from the Latin word "aurum" meaning "shining dawn".',
     category: 'Science',
   },
   {
@@ -441,14 +449,14 @@ export const QuizProvider = ({ children }: QuizProviderProps) => {
     setBrainwaveData(defaultBrainwave);
   };
   
+  // Update the useHint function to ensure it always returns a hint
   const useHint = () => {
-    if (currentQuestion?.hint) {
-      setXpPoints(prev => Math.max(0, prev - 5));
-      toast("Used a hint (-5 XP)");
-      return currentQuestion.hint;
-    }
-    toast.error("No hint available for this question");
-    return undefined;
+    if (!currentQuestion) return undefined;
+    
+    // Now all questions have hints, so we don't need to check if it exists
+    setXpPoints(prev => Math.max(0, prev - 5));
+    toast("Used a hint (-5 XP)");
+    return currentQuestion.hint;
   };
 
   const getRecommendedTopics = (): string[] => {

@@ -45,6 +45,9 @@ const Quiz = () => {
                   <p className="text-muted-foreground max-w-2xl mx-auto text-sm md:text-base">
                     Adaptive AI-powered quizzes that adjust to your skill level in real-time. The questions evolve as you learn!
                   </p>
+                  <p className="text-xs text-primary mt-2">
+                    Every question includes helpful hints to guide your learning journey!
+                  </p>
                 </div>
                 <CategorySelector onSelectCategory={startQuiz} />
               </div>

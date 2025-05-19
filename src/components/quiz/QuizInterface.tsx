@@ -179,9 +179,9 @@ const QuizInterface = () => {
           <Button
             variant="ghost"
             size="sm"
-            disabled={!currentQuestion.hint || !!selectedAnswer}
+            disabled={!!selectedAnswer}
             onClick={handleUseHint}
-            className={`text-muted-foreground ${currentQuestion.hint && !selectedAnswer ? 'hover:text-primary' : ''}`}
+            className={`text-muted-foreground ${!selectedAnswer ? 'hover:text-primary' : ''}`}
           >
             <HelpCircleIcon className="w-4 h-4 mr-1" />
             Use Hint
